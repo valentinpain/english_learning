@@ -12,7 +12,6 @@
       height: 100vh;
     }
 
-    /* Zone principale centrée */
     .main {
       flex: 1;
       display: flex;
@@ -21,25 +20,29 @@
       align-items: center;
     }
 
-    /* Zone d'ajout de mot à droite */
     .sidebar {
       width: 300px;
       background-color: #f4f4f4;
       padding: 20px;
       border-left: 1px solid #ccc;
       box-shadow: -2px 0 5px rgba(0,0,0,0.05);
+      overflow-y: auto;
     }
 
-    h1, h2 {
+    h1, h2, h3 {
       margin: 10px 0;
     }
 
-    input, button {
+    input, button, textarea {
       margin: 5px 0;
       padding: 10px;
       font-size: 16px;
       width: 100%;
       box-sizing: border-box;
+    }
+
+    textarea {
+      resize: vertical;
     }
 
     #result {
@@ -59,6 +62,9 @@
 
     li {
       margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
     .toggle-button {
@@ -92,122 +98,142 @@
 
     <button class="toggle-button" onclick="toggleWordList()">📄 Afficher/Masquer la liste</button>
     <ul id="wordList"></ul>
+
+    <hr>
+    <h3>📥 Importer des mots</h3>
+    <textarea id="importData" rows="6" placeholder="Ex: cat	chat" style="width: 100%; font-size: 14px;"></textarea>
+    <button onclick="importWords()">Importer</button>
   </div>
 
-<script>
-  let words = [];
-  let currentWord = null;
+  <script>
+    let words = [];
+    let currentWord = null;
 
-  function deleteWord(index) {
-  if (index >= 0 && index < words.length) {
-    words.splice(index, 1);
-    updateWordList();
-    saveWords(); // Sauvegarde après suppression
-  }
-}
-
-  function saveWords() {
-    localStorage.setItem('englishWords', JSON.stringify(words));
-  }
-
-  function loadWords() {
-    const stored = localStorage.getItem('englishWords');
-    if (stored) {
-      words = JSON.parse(stored);
-      updateWordList();
-    }
-  }
-
-  function addWord() {
-    const english = document.getElementById('english').value.trim().toLowerCase();
-    const french = document.getElementById('french').value.trim().toLowerCase();
-
-    if (english && french) {
-      words.push({ english, french });
-      document.getElementById('english').value = '';
-      document.getElementById('french').value = '';
-      updateWordList();
-      saveWords(); // 👈 sauvegarde après ajout
-    }
-  }
-
-function updateWordList() {
-  const list = document.getElementById('wordList');
-  list.innerHTML = '';
-  words.forEach((word, index) => {
-    const item = document.createElement('li');
-    item.style.display = 'flex';
-    item.style.alignItems = 'center';
-    item.style.justifyContent = 'space-between';
-
-    const text = document.createElement('span');
-    text.textContent = `${index + 1}. ${word.english} → ${word.french}`;
-
-    const deleteBtn = document.createElement('button');
-    deleteBtn.textContent = '❌';
-    deleteBtn.onclick = () => deleteWord(index);
-    deleteBtn.style.background = 'none';
-    deleteBtn.style.border = 'none';
-    deleteBtn.style.color = 'red';
-    deleteBtn.style.fontSize = '12px';
-    deleteBtn.style.cursor = 'pointer';
-    deleteBtn.style.padding = '2px';
-
-    item.appendChild(text);
-    item.appendChild(deleteBtn);
-    list.appendChild(item);
-  });
-}
-
-
-
-  function toggleWordList() {
-    const list = document.getElementById('wordList');
-    list.style.display = list.style.display === 'none' ? 'block' : 'none';
-  }
-
-  function startTraining() {
-    if (words.length === 0) {
-      document.getElementById('question').textContent = "Ajoute d'abord quelques mots !";
-      return;
-    }
-    pickRandomWord();
-  }
-
-  function pickRandomWord() {
-    currentWord = words[Math.floor(Math.random() * words.length)];
-    document.getElementById('question').textContent = `Traduis en anglais : ${currentWord.french}`;
-    document.getElementById('answer').value = '';
-    document.getElementById('answer').focus();
-    document.getElementById('result').textContent = '';
-  }
-
-  function checkAnswer() {
-    const userAnswer = document.getElementById('answer').value.trim().toLowerCase();
-    if (!currentWord) return;
-
-    const result = document.getElementById('result');
-    if (userAnswer === currentWord.english) {
-      result.textContent = "✅ Bonne réponse !";
-    } else {
-      result.textContent = `❌ Mauvais. La bonne réponse était : ${currentWord.english}`;
+    function saveWords() {
+      localStorage.setItem('englishWords', JSON.stringify(words));
     }
 
-    setTimeout(() => {
+    function loadWords() {
+      const stored = localStorage.getItem('englishWords');
+      if (stored) {
+        words = JSON.parse(stored);
+        updateWordList();
+      }
+    }
+
+    function addWord() {
+      const english = document.getElementById('english').value.trim().toLowerCase();
+      const french = document.getElementById('french').value.trim().toLowerCase();
+
+      if (english && french) {
+        words.push({ english, french });
+        document.getElementById('english').value = '';
+        document.getElementById('french').value = '';
+        updateWordList();
+        saveWords();
+      }
+    }
+
+    function updateWordList() {
+      const list = document.getElementById('wordList');
+      list.innerHTML = '';
+      words.forEach((word, index) => {
+        const item = document.createElement('li');
+
+        const text = document.createElement('span');
+        text.textContent = `${index + 1}. ${word.english} → ${word.french}`;
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = '❌';
+        deleteBtn.onclick = () => deleteWord(index);
+        deleteBtn.style.background = 'none';
+        deleteBtn.style.border = 'none';
+        deleteBtn.style.color = 'red';
+        deleteBtn.style.fontSize = '12px';
+        deleteBtn.style.cursor = 'pointer';
+        deleteBtn.style.padding = '2px';
+
+        item.appendChild(text);
+        item.appendChild(deleteBtn);
+        list.appendChild(item);
+      });
+    }
+
+    function deleteWord(index) {
+      if (index >= 0 && index < words.length) {
+        words.splice(index, 1);
+        updateWordList();
+        saveWords();
+      }
+    }
+
+    function toggleWordList() {
+      const list = document.getElementById('wordList');
+      list.style.display = list.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function importWords() {
+      const rawText = document.getElementById('importData').value;
+      const lines = rawText.trim().split('\n');
+
+      let count = 0;
+
+      lines.forEach(line => {
+        const [english, french] = line.split('\t').map(part => part?.trim().toLowerCase());
+        if (english && french) {
+          words.push({ english, french });
+          count++;
+        }
+      });
+
+      if (count > 0) {
+        saveWords();
+        updateWordList();
+        document.getElementById('importData').value = '';
+      }
+    }
+
+    function startTraining() {
+      if (words.length === 0) {
+        document.getElementById('question').textContent = "Ajoute d'abord quelques mots !";
+        return;
+      }
       pickRandomWord();
-    }, 1500);
-  }
-
-  function handleEnter(event) {
-    if (event.key === 'Enter') {
-      checkAnswer();
     }
-  }
 
-  // ⏳ Charger les mots dès que la page est prête
-  window.onload = loadWords;
-</script>
+    function pickRandomWord() {
+      currentWord = words[Math.floor(Math.random() * words.length)];
+      document.getElementById('question').textContent = `Traduis en anglais : ${currentWord.french}`;
+      document.getElementById('answer').value = '';
+      document.getElementById('answer').focus();
+      document.getElementById('result').textContent = '';
+    }
 
+    function checkAnswer() {
+      const userAnswer = document.getElementById('answer').value.trim().toLowerCase();
+      if (!currentWord) return;
+
+      const result = document.getElementById('result');
+      if (userAnswer === currentWord.english) {
+        result.textContent = "✅ Bonne réponse !";
+      } else {
+        result.textContent = `❌ Mauvais. La bonne réponse était : ${currentWord.english}`;
+      }
+
+      setTimeout(() => {
+        pickRandomWord();
+      }, 1500);
+    }
+
+    function handleEnter(event) {
+      if (event.key === 'Enter') {
+        checkAnswer();
+      }
+    }
+
+    // Charger les mots à l'ouverture
+    window.onload = loadWords;
+  </script>
 
 </body>
 </html>
