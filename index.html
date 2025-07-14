@@ -7,6 +7,8 @@
     body { font-family: sans-serif; padding: 20px; }
     input, button { margin: 5px 0; padding: 10px; font-size: 16px; }
     .section { margin-top: 30px; }
+    #wordList { margin-top: 20px; font-size: 14px; }
+    li { margin-bottom: 5px; }
   </style>
 </head>
 <body>
@@ -18,13 +20,15 @@
     <input type="text" id="english" placeholder="Mot en anglais">
     <input type="text" id="french" placeholder="Traduction en français">
     <button onclick="addWord()">Ajouter</button>
+
+    <ul id="wordList"></ul>
   </div>
 
   <div class="section">
     <h2>🎯 Entraînement</h2>
     <button onclick="startTraining()">Commencer l'entraînement</button>
     <p id="question"></p>
-    <input type="text" id="answer" placeholder="Votre réponse en anglais">
+    <input type="text" id="answer" placeholder="Votre réponse en anglais" onkeypress="handleEnter(event)">
     <button onclick="checkAnswer()">Valider</button>
     <p id="result"></p>
   </div>
@@ -39,21 +43,35 @@
 
       if (english && french) {
         words.push({ english, french });
-        alert(`Mot ajouté : ${english} → ${french}`);
         document.getElementById('english').value = '';
         document.getElementById('french').value = '';
+        updateWordList();
       }
+    }
+
+    function updateWordList() {
+      const list = document.getElementById('wordList');
+      list.innerHTML = '';
+      words.forEach((word, index) => {
+        const item = document.createElement('li');
+        item.textContent = `${index + 1}. ${word.english} → ${word.french}`;
+        list.appendChild(item);
+      });
     }
 
     function startTraining() {
       if (words.length === 0) {
-        alert("Ajoute d'abord quelques mots !");
+        document.getElementById('question').textContent = "Ajoute d'abord quelques mots !";
         return;
       }
+      pickRandomWord();
+    }
 
+    function pickRandomWord() {
       currentWord = words[Math.floor(Math.random() * words.length)];
       document.getElementById('question').textContent = `Traduis en anglais : ${currentWord.french}`;
       document.getElementById('answer').value = '';
+      document.getElementById('answer').focus();
       document.getElementById('result').textContent = '';
     }
 
@@ -61,13 +79,23 @@
       const userAnswer = document.getElementById('answer').value.trim().toLowerCase();
       if (!currentWord) return;
 
+      const result = document.getElementById('result');
       if (userAnswer === currentWord.english) {
-        document.getElementById('result').textContent = "✅ Bonne réponse !";
+        result.textContent = "✅ Bonne réponse !";
       } else {
-        document.getElementById('result').textContent = `❌ Mauvais. La bonne réponse était : ${currentWord.english}`;
+        result.textContent = `❌ Mauvais. La bonne réponse était : ${currentWord.english}`;
       }
 
-      currentWord = null;
+      // Nouveau mot aléatoire après court délai
+      setTimeout(() => {
+        pickRandomWord();
+      }, 1500);
+    }
+
+    function handleEnter(event) {
+      if (event.key === 'Enter') {
+        checkAnswer();
+      }
     }
   </script>
 
