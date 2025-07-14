@@ -1,3 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Apprendre l'anglais</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      height: 100vh;
+    }
+
+    /* Zone principale centrée */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Zone d'ajout de mot à droite */
+    .sidebar {
+      width: 300px;
+      background-color: #f4f4f4;
+      padding: 20px;
+      border-left: 1px solid #ccc;
+      box-shadow: -2px 0 5px rgba(0,0,0,0.05);
+    }
+
+    h1, h2 {
+      margin: 10px 0;
+    }
+
+    input, button {
+      margin: 5px 0;
+      padding: 10px;
+      font-size: 16px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    #result {
+      margin-top: 10px;
+      font-size: 18px;
+    }
+
+    #wordList {
+      display: none;
+      margin-top: 10px;
+      font-size: 14px;
+      max-height: 200px;
+      overflow-y: auto;
+      border-top: 1px solid #ccc;
+      padding-top: 10px;
+    }
+
+    li {
+      margin-bottom: 5px;
+    }
+
+    .toggle-button {
+      margin-top: 10px;
+      font-size: 14px;
+      background: #ddd;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="main">
+    <h1>📘 Apprendre l'anglais</h1>
+
+    <div>
+      <h2>🎯 Entraînement</h2>
+      <button onclick="startTraining()">Commencer</button>
+      <p id="question"></p>
+      <input type="text" id="answer" placeholder="Votre réponse en anglais" onkeypress="handleEnter(event)">
+      <button onclick="checkAnswer()">Valider</button>
+      <p id="result"></p>
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <h2>➕ Ajouter un mot</h2>
+    <input type="text" id="english" placeholder="Mot en anglais">
+    <input type="text" id="french" placeholder="Traduction en français">
+    <button onclick="addWord()">Ajouter</button>
+
+    <button class="toggle-button" onclick="toggleWordList()">📄 Afficher/Masquer la liste</button>
+    <ul id="wordList"></ul>
+  </div>
+
 <script>
   let words = [];
   let currentWord = null;
@@ -83,3 +179,7 @@
   // ⏳ Charger les mots dès que la page est prête
   window.onload = loadWords;
 </script>
+
+
+</body>
+</html>
