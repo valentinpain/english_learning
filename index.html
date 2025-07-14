@@ -136,22 +136,29 @@ function updateWordList() {
   list.innerHTML = '';
   words.forEach((word, index) => {
     const item = document.createElement('li');
-    item.innerHTML = `
-      ${index + 1}. ${word.english} → ${word.french}
-      <button onclick="deleteWord(${index})" style="
-  margin-left: 10px;
-  background: none;
-  border: none;
-  color: red;
-  font-size: 10px;
-  cursor: pointer;
-  padding: 2px;
-">❌</button>
+    item.style.display = 'flex';
+    item.style.alignItems = 'center';
+    item.style.justifyContent = 'space-between';
 
-    `;
+    const text = document.createElement('span');
+    text.textContent = `${index + 1}. ${word.english} → ${word.french}`;
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.textContent = '❌';
+    deleteBtn.onclick = () => deleteWord(index);
+    deleteBtn.style.background = 'none';
+    deleteBtn.style.border = 'none';
+    deleteBtn.style.color = 'red';
+    deleteBtn.style.fontSize = '12px';
+    deleteBtn.style.cursor = 'pointer';
+    deleteBtn.style.padding = '2px';
+
+    item.appendChild(text);
+    item.appendChild(deleteBtn);
     list.appendChild(item);
   });
 }
+
 
 
   function toggleWordList() {
