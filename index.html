@@ -98,6 +98,14 @@
   let words = [];
   let currentWord = null;
 
+  function deleteWord(index) {
+  if (index >= 0 && index < words.length) {
+    words.splice(index, 1);
+    updateWordList();
+    saveWords(); // Sauvegarde après suppression
+  }
+}
+
   function saveWords() {
     localStorage.setItem('englishWords', JSON.stringify(words));
   }
@@ -123,15 +131,19 @@
     }
   }
 
-  function updateWordList() {
-    const list = document.getElementById('wordList');
-    list.innerHTML = '';
-    words.forEach((word, index) => {
-      const item = document.createElement('li');
-      item.textContent = `${index + 1}. ${word.english} → ${word.french}`;
-      list.appendChild(item);
-    });
-  }
+function updateWordList() {
+  const list = document.getElementById('wordList');
+  list.innerHTML = '';
+  words.forEach((word, index) => {
+    const item = document.createElement('li');
+    item.innerHTML = `
+      ${index + 1}. ${word.english} → ${word.french}
+      <button onclick="deleteWord(${index})" style="margin-left: 10px; color: red; font-size: 12px;">❌</button>
+    `;
+    list.appendChild(item);
+  });
+}
+
 
   function toggleWordList() {
     const list = document.getElementById('wordList');
