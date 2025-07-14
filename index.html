@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Apprendre l'anglais</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    input, button { margin: 5px 0; padding: 10px; font-size: 16px; }
+    .section { margin-top: 30px; }
+  </style>
+</head>
+<body>
+
+  <h1>📘 Apprendre l'anglais</h1>
+
+  <div class="section">
+    <h2>➕ Ajouter un mot</h2>
+    <input type="text" id="english" placeholder="Mot en anglais">
+    <input type="text" id="french" placeholder="Traduction en français">
+    <button onclick="addWord()">Ajouter</button>
+  </div>
+
+  <div class="section">
+    <h2>🎯 Entraînement</h2>
+    <button onclick="startTraining()">Commencer l'entraînement</button>
+    <p id="question"></p>
+    <input type="text" id="answer" placeholder="Votre réponse en anglais">
+    <button onclick="checkAnswer()">Valider</button>
+    <p id="result"></p>
+  </div>
+
+  <script>
+    let words = [];
+    let currentWord = null;
+
+    function addWord() {
+      const english = document.getElementById('english').value.trim().toLowerCase();
+      const french = document.getElementById('french').value.trim().toLowerCase();
+
+      if (english && french) {
+        words.push({ english, french });
+        alert(`Mot ajouté : ${english} → ${french}`);
+        document.getElementById('english').value = '';
+        document.getElementById('french').value = '';
+      }
+    }
+
+    function startTraining() {
+      if (words.length === 0) {
+        alert("Ajoute d'abord quelques mots !");
+        return;
+      }
+
+      currentWord = words[Math.floor(Math.random() * words.length)];
+      document.getElementById('question').textContent = `Traduis en anglais : ${currentWord.french}`;
+      document.getElementById('answer').value = '';
+      document.getElementById('result').textContent = '';
+    }
+
+    function checkAnswer() {
+      const userAnswer = document.getElementById('answer').value.trim().toLowerCase();
+      if (!currentWord) return;
+
+      if (userAnswer === currentWord.english) {
+        document.getElementById('result').textContent = "✅ Bonne réponse !";
+      } else {
+        document.getElementById('result').textContent = `❌ Mauvais. La bonne réponse était : ${currentWord.english}`;
+      }
+
+      currentWord = null;
+    }
+  </script>
+
+</body>
+</html>
